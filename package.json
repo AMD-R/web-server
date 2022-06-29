@@ -1,13 +1,13 @@
 {
   "name": "web-server",
   "version": "1.0.0",
-  "description": "Back",
+  "description": "Back-end server for AMD-R",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "author": "",
+  "author": "AMD-R",
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "bcryptjs": "^2.4.3",
