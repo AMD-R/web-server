@@ -14,6 +14,7 @@ app.use(cookieParser());
 
 // Routes
 app.use("/api/auth", require("./Auth/route"));
+app.use("/api/amd-r", require("./amd-r/route"));
 
 app.get("/", (req, res) => res.render("auth/home"));
 app.get("/register", (req, res) => res.render("auth/register"));
