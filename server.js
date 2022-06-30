@@ -15,18 +15,18 @@ app.use(cookieParser());
 // Routes
 app.use("/api/auth", require("./Auth/route"));
 
-app.get("/", (req, res) => res.render("home"));
-app.get("/register", (req, res) => res.render("register"));
-app.get("/login", (req, res) => res.render("login"));
+app.get("/", (req, res) => res.render("auth/home"));
+app.get("/register", (req, res) => res.render("auth/register"));
+app.get("/login", (req, res) => res.render("auth/login"));
 app.get("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: "1" });
   res.redirect("/");
 });
-app.get("/admin", adminAuth, (req, res) => res.render("admin"));
+app.get("/admin", adminAuth, (req, res) => res.render("auth/admin"));
 app.get("/basic", userAuth, (req, res) => {
-  res.render("user");
+  res.render("auth/user");
 });
-app.get("*", (req, res) => res.status(404).render('404'));
+app.get("*", (req, res) => res.status(404).render('error/404'));
 
 const server = app.listen(port, () =>
   console.log(`Server Connected to port ${port}`)

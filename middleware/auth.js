@@ -6,10 +6,10 @@ exports.adminAuth = (req, res, next) => {
   if (token) {
     jwt.verify(token, jwtSecret, (err, decodedToken) => {
       if (err) {
-        return res.status(401).json({ message: "Not authorized" });
+        return res.status(401).render('error/401');
       } else {
         if (decodedToken.role !== "admin") {
-          return res.status(401).json({ message: "Not authorized" });
+          return res.status(401).render('error/401');
         } else {
           next();
         }
@@ -18,7 +18,7 @@ exports.adminAuth = (req, res, next) => {
   } else {
     return res
       .status(401)
-      .render('401');
+      .render('error/401');
   }
 };
 exports.userAuth = (req, res, next) => {
@@ -26,10 +26,10 @@ exports.userAuth = (req, res, next) => {
   if (token) {
     jwt.verify(token, jwtSecret, (err, decodedToken) => {
       if (err) {
-        return res.status(401).json({ message: "Not authorized" });
+        return res.status(401).render('error/401');
       } else {
         if (decodedToken.role !== "Basic") {
-          return res.status(401).json({ message: "Not authorized" });
+          return res.status(401).render('error/401');
         } else {
           next();
         }
@@ -38,6 +38,6 @@ exports.userAuth = (req, res, next) => {
   } else {
     return res
       .status(401)
-      .render('401');
+      .render('error/401');
   }
 };
