@@ -4,20 +4,20 @@ const amdr = require("./AMD-R");
 const dataSchema = new Mongoose.Schema({
   gps: {
     lon: {
-      type: Number,
+      type: Mongoose.Types.Decimal128,
       required: true,
     },
     lat: {
-      type: Number,
+      type: Mongoose.Types.Decimal128,
       required: true,
     },
   },
   battery: {
-    type: Number,
+    type: Mongoose.Types.Decimal128,
     required: true,
   },
   speed: {
-    type: Number,
+    type: Mongoose.Types.Decimal128,
     required: true,
   },
   mission: {
