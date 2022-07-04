@@ -1,5 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require('../config.json');
+const amdr = require('../model/AMD-R');
+const bcrypt = require("bcryptjs");
 
 // Normal middleware
 exports.adminAuth = (req, res, next) => {
@@ -82,5 +84,40 @@ exports.userAuthAPI = (req, res, next) => {
     return res
       .status(401)
       .json({message: 'Permissions Denied'});
+  }
+};
+exports.amdrAuthAPI = async (req, res, next) => {
+  const { name, password } = req.body;
+
+  // Check if name and password is provided
+  if (!name || !password) {
+    return res.status(400).json({
+      message: "Name or Password not present",
+    });
+  }
+  try {
+    const user = await amdr.findOne({ name });
+    req.id = user._id.toString();
+
+    if (!user) {
+      res.status(400).json({
+        message: "Login not successful",
+        error: "AMD-R not found",
+      });
+    } else {
+      // comparing given password with hashed password
+      bcrypt.compare(password, user.password).then(function(result) {
+        if (result) {
+          next()
+        } else {
+          res.status(400).json({ message: "Wrong Password" });
+        }
+      });
+    }
+  } catch (error) {
+    res.status(400).json({
+      message: "An error occurred",
+      error: error.message,
+    });
   }
 };
