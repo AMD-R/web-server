@@ -24,3 +24,10 @@ A `config.json` file must be created before the starting the server. A sample `c
 ```
 
 **Note:** a new config entry called "jwtSecret" will be generated in the first run of the program. This is a secret used for hasing the passwords. Do not generate your own unless you know what you are doing as the secret should be cryptographically secure.
+
+# TODO
+  * [ ] Write better views
+  * [ ] Better looking frontend
+  * [ ] Organize server requests
+  * [ ] Make AMD-R verification using RSA signing
+  * [ ] Write jsdocs
