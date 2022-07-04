@@ -64,6 +64,28 @@ async function register(req, res, next) {
   });
 }
 
+/**
+ * Verifies the AMD-R
+ * @param {} req
+ * */
+async function verifyAMDR(req, res, next) {
+  const { id } = req.body;
+  if (!id)
+    return res.status(400).json({ message: "No AMD-R ID given" });
+  await amdr.findByIdAndUpdate(id, { verified: true })
+    .then((value) => {
+      res.status(200).json({
+        message: "Succesfully Verified AMD-R",
+      })
+    })
+    .catch((err) => {
+      res.status(400).json({
+        message: "Unable to Verify AMD-R",
+        error: err.message,
+      })
+    });
+}
+
 async function getAMDRs(req, res, next) {
   await amdr.find({})
     .then((amdrs) => {
@@ -75,7 +97,7 @@ async function getAMDRs(req, res, next) {
 
         return container;
       });
-      res.status(200).json({"AMD-Rs": formated});
+      res.status(200).json({ "AMD-Rs": formated });
     })
     .catch((err) => res.status(400).json({
       message: "Failed to fet AMD-Rs",
@@ -87,4 +109,5 @@ module.exports = {
   subscriber,
   register,
   getAMDRs,
+  verifyAMDR,
 };
