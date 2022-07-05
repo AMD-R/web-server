@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Admin page</title>
     </head>
-
     <body>
         <div class="display" style="background-color: red;"></div>
         <h1>AMD-Rs</h1>
@@ -27,7 +25,7 @@
          // Verify Button
          async function verifyCallback(id) {
              const res = await fetch('/api/amd-r/verifyAMD-R', {
-               method: 'PATCH',
+                 method: 'PATCH',
                  body: JSON.stringify({
                      id,
                  }),
@@ -59,6 +57,7 @@
                             </button>`;
                      verified.innerHTML += li;
                  } else { // Not Verified
+                     // https://www.htmlgoodies.com/getting-started/reloading-the-page/
                      li += `<button class="verify", onclick="verifyCallback('${amdr.id}')">
                               <a href="javascript:history.go(0)" style="text-decoration: none; color: black">
                                 Verify
