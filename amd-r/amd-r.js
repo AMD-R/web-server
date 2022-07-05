@@ -105,9 +105,38 @@ async function getAMDRs(req, res, next) {
     }))
 }
 
+async function getAMDRData(req, res, next) {
+  const { id } = req.body;
+  const model = Mongoose.model(id, data, id);
+  const { name } = await amdr.findById(id)
+  // https://stackoverflow.com/questions/12467102/how-to-get-the-latest-and-oldest-record-in-mongoose-js-or-just-the-timespan-bet
+  model.findOne({}, [], { sort: { Time: -1 } })
+    .then(query => {
+      // Creating response object
+      const container = new Object();
+      container.gps = new Object();
+      container.gps.lon = Number(query.gps.lon);
+      container.gps.lat = Number(query.gps.lat);
+      container.mission = query.gps.mission;
+      container.battery = Number(query.battery);
+      container.speed = Number(query.speed);
+      container.name = name;
+
+      // Responding
+      res.status(200).json(container);
+    })
+    .catch(err => {
+      res.status(400).json({
+        message: "Unable to get data",
+        error: err.message
+      });
+    });
+}
+
 module.exports = {
   subscriber,
   register,
   getAMDRs,
   verifyAMDR,
+  getAMDRData,
 };
