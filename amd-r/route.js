@@ -8,7 +8,7 @@ const { subscriber, register, getAMDRs, verifyAMDR, getAMDRData } = require("./a
 
 router.route('/subscriber').post(amdrAuthAPI, subscriber);
 router.route('/register').post(register);
-router.route('/getAMD-Rs').get(getAMDRs);
+router.route('/getAMD-Rs').get(adminAuthAPI, getAMDRs);
 router.route('/verifyAMD-R').patch(adminAuthAPI, verifyAMDR);
 router.route('/getData').post(adminAuthAPI, getAMDRData);
 
