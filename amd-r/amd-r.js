@@ -11,13 +11,10 @@ async function subscriber(req, res, next) {
 
   if (gps && battery && speed && mission) {
     await model.create({
-      gps: {
-        lon: gps.lon,
-        lat: gps.lat,
-      },
-      battery: battery,
-      speed: speed,
-      mission: mission,
+      gps,
+      battery,
+      speed,
+      mission,
       Time: cTime.toGMTString()
     })
       .then((amdr_data) => {
