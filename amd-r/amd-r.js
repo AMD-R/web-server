@@ -112,12 +112,24 @@ async function getAMDRData(req, res, next) {
       // Creating response object
       const container = new Object();
       container.gps = new Object();
-      container.gps.lon = Number(query.gps.lon);
-      container.gps.lat = Number(query.gps.lat);
-      container.mission = query.gps.mission;
-      container.battery = Number(query.battery);
-      container.speed = Number(query.speed);
-      container.name = name;
+
+      if (query) {
+        // Populating values if there is something
+        container.gps.lon = Number(query.gps.lon);
+        container.gps.lat = Number(query.gps.lat);
+        container.mission = query.gps.mission;
+        container.battery = Number(query.battery);
+        container.speed = Number(query.speed);
+        container.name = name;
+      } else {
+        // Set values to 0 there is nothing
+        container.gps.lon = Number(0);
+        container.gps.lat = Number(0);
+        container.mission = "Can't fetch any data";
+        container.battery = Number(0);
+        container.speed = Number(0);
+        container.name = name;
+      }
 
       // Responding
       res.status(200).json(container);
