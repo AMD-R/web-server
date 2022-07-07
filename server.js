@@ -10,6 +10,9 @@ app.set("view engine", "ejs");
 connectDB();
 
 app.use(express.json());
+// https://www.tutorialspoint.com/expressjs/expressjs_form_data.htm (For Serverside authentication)
+// https://expressjs.com/en/resources/middleware/body-parser.html#bodyparsertextoptions
+app.use(express.urlencoded({extended: true}))
 app.use(cookieParser());
 
 // Routes
