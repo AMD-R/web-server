@@ -92,11 +92,12 @@ exports.login = async (req, res, next) => {
             httpOnly: true,
             maxAge: maxAge * 1000, // 3hrs in ms
           });
-          res.status(201).json({
-            message: "User successfully Logged in",
-            user: user._id,
-            role: user.role,
-          });
+          if (user.role == "admin") {
+            res.status(201).redirect("/admin");
+          } else if (user.role == "Basic") {
+            res.status(201).redirect("/basic");
+          } else {
+          }
         } else {
           res.status(400).json({ message: "Login not succesful" });
         }
