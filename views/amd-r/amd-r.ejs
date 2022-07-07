@@ -64,9 +64,9 @@
             <td class="dashboard">
                 Battery
                 <hr>
-                <div id="battery">79.10798444485604%</div>
+                <div id="battery">0%</div>
                 <div class="bar-frame">
-                    <div id="battery-bar" class="bar" style="width: 79.108%;">
+                    <div id="battery-bar" class="bar">
                     </div>
                 </div></td>
             <td rowspan="2" class="dashboard">
@@ -82,13 +82,14 @@
             <td class="dashboard">
                 Task
                 <hr>
+                <div id="task">None</div>
             </td>
             <td class="dashboard">
                 Speed
                 <hr>
-                <div id="speed">1.48889305478132 m/s</div>
+                <div id="speed">0 m/s</div>
                 <div class="bar-frame">
-                    <div id="speed-bar" class="bar" style="width: 74.4447%;"></div>
+                    <div id="speed-bar" class="bar"></div>
                 </div>
             </td>
         </tr>
@@ -103,6 +104,7 @@
      var battery_bar = document.getElementById('battery-bar');
      var speed = document.getElementById('speed');
      var speed_bar = document.getElementById('speed-bar');
+     var task = document.getElementById('task');
 
      // Setting up openstreet map
      var coords = [2.947, 101.8752];
@@ -132,6 +134,7 @@
          battery_bar.style.width = data.battery + "%";
          speed.innerHTML = data.speed + " m/s";
          speed_bar.style.width = data.speed / 2 * 100 + "%";
+         task.innerHTML = data.mission;
 
          // Updating map
          // Setting up coords
