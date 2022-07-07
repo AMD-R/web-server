@@ -117,7 +117,7 @@ async function getAMDRData(req, res, next) {
         // Populating values if there is something
         container.gps.lon = Number(query.gps.lon);
         container.gps.lat = Number(query.gps.lat);
-        container.mission = query.gps.mission;
+        container.mission = query.mission;
         container.battery = Number(query.battery);
         container.speed = Number(query.speed);
         container.name = name;
