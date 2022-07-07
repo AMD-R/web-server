@@ -24,6 +24,9 @@ app.get("/logout", (req, res) => {
   res.redirect("/");
 });
 app.get("/admin", adminAuth, (req, res) => res.render("auth/admin"));
+app.get("/admin/users", adminAuth, (req, res) => res.render("auth/admin-users"));
+app.get("/admin/amd-r", adminAuth, (req, res) => res.render("auth/admin-amd-r"));
+app.get("/amd-r/*", adminAuth, (req, res) => res.render("amd-r/amd-r"))
 app.get("/basic", userAuth, (req, res) => {
   res.render("auth/user");
 });
