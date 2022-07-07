@@ -12,7 +12,7 @@ connectDB();
 app.use(express.json());
 // https://www.tutorialspoint.com/expressjs/expressjs_form_data.htm (For Serverside authentication)
 // https://expressjs.com/en/resources/middleware/body-parser.html#bodyparsertextoptions
-app.use(express.urlencoded({extended: true}))
+app.use(express.urlencoded({ extended: true }))
 app.use(cookieParser());
 
 // Routes
@@ -20,8 +20,20 @@ app.use("/api/auth", require("./Auth/route"));
 app.use("/api/amd-r", require("./amd-r/route"));
 
 app.get("/", (req, res) => res.render("auth/home"));
-app.get("/register", sessionAuth, (req, res) => res.render("auth/register"));
-app.get("/login", sessionAuth, (req, res) => res.render("auth/login"));
+app.get("/register", sessionAuth, (req, res) => {
+  if (req.cookies.redirect) {
+    res.clearCookie("redirect");
+    res.render("auth/register-failed");
+  } else
+    res.render("auth/register");
+});
+app.get("/login", sessionAuth, (req, res) => {
+  if (req.cookies.redirect) {
+    res.clearCookie("redirect");
+    res.render("auth/login-failed");
+  } else
+    res.render("auth/login");
+});
 app.get("/logout", (req, res) => {
   res.cookie("jwt", "", { maxAge: "1" });
   res.redirect("/");
