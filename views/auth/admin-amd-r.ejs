@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin page</title>
+    </head>
+    <body>
+        <div class="display" style="background-color: red;"></div>
+        <h1>AMD-Rs</h1>
+        <!--Verified AMD-R List-------------------------------------------------------->
+        <h2>Verified</h2>
+        <ul id="verified"></ul>
+
+        <!--Unverified AMD-R List-------------------------------------------------------->
+        <h2>Unverified</h2>
+        <ul id="unverified"></ul>
+
+        <script>
+         const verified = document.getElementById('verified');
+         const unverified = document.getElementById('unverified');
+         const display = document.querySelector('.display');
+
+         // Verify Button
+         async function verifyCallback(id) {
+             const res = await fetch('/api/amd-r/verifyAMD-R', {
+                 method: 'PATCH',
+                 body: JSON.stringify({
+                     id,
+                 }),
+                 headers: { 'Content-Type': 'application/json' }
+             })
+         }
+
+         // Getting all AMD-R data
+         const getAMDRs = async () => {
+             // Getting the data
+             const res = await fetch('/api/amd-r/getAMD-Rs');
+             const data = await res.json();
+             // Getting the lists
+             const verified = document.getElementById('verified');
+             const unverified = document.getElementById('unverified');
+
+             data["AMD-Rs"].forEach((amdr) => {
+                 // Base list item
+                 let li = `<li>
+                            <b>Name: </b>${amdr.name}
+                            <br>
+                           </li>`;
+                 // If AMD-R is verified
+                 if (amdr.verified) {
+                     li += `<button class="dashboard">
+                              <a href="/amd-r/${amdr.id}" style="text-decoration: none; color: black">
+                                View Dashboard
+                              </a>
+                            </button>`;
+                     verified.innerHTML += li;
+                 } else { // Not Verified
+                     // https://www.htmlgoodies.com/getting-started/reloading-the-page/
+                     li += `<button class="verify", onclick="verifyCallback('${amdr.id}')">
+                              <a href="javascript:history.go(0)" style="text-decoration: none; color: black">
+                                Verify
+                              </a>
+                            </button>`;
+                     unverified.innerHTML += li;
+                 }
+             })
+         }
+         getAMDRs();
+        </script>
+
+        <!--Logout Button----------------------------------------------------->
+        <button class="logout"> <a href="/logout">Log Out</a></button>
+    </body>
+
+</html>
