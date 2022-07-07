@@ -73,7 +73,7 @@ exports.sessionAuth = (req, res, next) => {
         } else if (decodedToken.role == "admin"){
           return res.status(303).redirect('/admin');
         } else {
-          return res.render('auth/login-failed')
+          return res.render('auth/login-failed');
         }
       }
     });

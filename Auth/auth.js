@@ -28,9 +28,6 @@ if (!jwtSecret) {
  * */
 exports.register = async (req, res, next) => {
   const { username, password } = req.body;
-  if (password.length < 6) {
-    return res.status(400).json({ message: "Password less than 6 characters" });
-  }
   bcrypt.hash(password, 10).then(async (hash) => {
     await User.create({
       username,
@@ -49,18 +46,12 @@ exports.register = async (req, res, next) => {
           httpOnly: true,
           maxAge: maxAge * 1000,
         });
-        res.status(201).json({
-          message: "User successfully created",
-          user: user._id,
-          role: user.role,
-        });
+        res.status(201).redirect("/basic");
       })
-      .catch((error) =>
-        res.status(400).json({
-          message: "User not successful created",
-          error: error.message,
-        })
-      );
+      .catch((error) => {
+        res.cookie("redirect", "Duplicate Username");
+        res.status(400).redirect("/register");
+      });
   });
 };
 
@@ -74,19 +65,16 @@ exports.login = async (req, res, next) => {
 
   // Check if username and password is provided
   if (!username || !password) {
-    return res.status(400).json({
-      message: "Username or Password not present",
-    });
+    res.cookie("redirect", "Incorrect Username or Password");
+    return res.status(400).redirect("/login");
   }
 
   try {
     const user = await User.findOne({ username });
 
     if (!user) {
-      res.status(400).json({
-        message: "Login not successful",
-        error: "User not found",
-      });
+      res.cookie("redirect", "Incorrect Username or Password");
+      return res.status(400).redirect("/login");
     } else {
       // comparing given password with hashed password
       bcrypt.compare(password, user.password).then(function(result) {
@@ -108,17 +96,17 @@ exports.login = async (req, res, next) => {
           } else if (user.role == "Basic") {
             res.status(201).redirect("/basic");
           } else {
+            res.cookie("redirect", "Invalid Role");
+            res.status(400).redirect("/login");
           }
         } else {
-          res.status(400).json({ message: "Login not succesful" });
+          res.cookie("redirect", "Incorrect Username or Password");
+          res.status(400).redirect("/login");
         }
       });
     }
   } catch (error) {
-    res.status(400).json({
-      message: "An error occurred",
-      error: error.message,
-    });
+    res.status(400).redirect("/login");
   }
 };
 

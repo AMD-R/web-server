@@ -8,11 +8,11 @@
     <body>
         <h1>Register Page</h1>
         <form method="post" action="/api/auth/register">
-            <div class="error" style="background-color: red;"></div><br>
+            <div class="error" style="background-color: red;">Username already in used please try another one</div><br>
             <label for="username">Username</label><br>
-            <input type="text" id="username" required name="username"/><br>
+            <input type="text" id="username" required="" name="username"><br>
             <label for="password">Password</label><br>
-            <input type="password" id="password" required name="password" minlength="6"><br>
+            <input type="password" id="password" required="" name="password" minlength="6"><br>
             <input type="submit" value="register"><br>
         </form>
         <a href="/login">Already registered? Login</a>
