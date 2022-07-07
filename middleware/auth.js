@@ -56,6 +56,31 @@ exports.userAuth = (req, res, next) => {
       .render('error/401');
   }
 };
+/**
+ * Check if the user logged in
+ * @param {request} req
+ * @param {response} res
+ * */
+exports.sessionAuth = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(token, jwtSecret, (err, decodedToken) => {
+      if (err) {
+        return res.status(400).render('error/400');
+      } else {
+        if (decodedToken.role == "Basic") {
+          return res.status(303).redirect('/basic');
+        } else if (decodedToken.role == "admin"){
+          return res.status(303).redirect('/admin');
+        } else {
+          return res.render('auth/login-failed')
+        }
+      }
+    });
+  } else {
+    next();
+  }
+}
 
 // API middleware
 /**
