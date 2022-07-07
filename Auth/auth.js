@@ -2,6 +2,7 @@ const User = require("../model/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require('../config.json');
+const { request, response } = require('express');
 
 if (!jwtSecret) {
   console.log('No jwtSecret found, generating...Please don\'t terminate process');
@@ -20,6 +21,11 @@ if (!jwtSecret) {
   process.exit(0);
 }
 
+/**
+ * API for registering
+ * @param {request} res
+ * @param {response} res
+ * */
 exports.register = async (req, res, next) => {
   const { username, password } = req.body;
   if (password.length < 6) {
@@ -58,6 +64,11 @@ exports.register = async (req, res, next) => {
   });
 };
 
+/**
+ * API for loggingin
+ * @param {request} res
+ * @param {response} res
+ * */
 exports.login = async (req, res, next) => {
   const { username, password } = req.body;
 
@@ -111,6 +122,11 @@ exports.login = async (req, res, next) => {
   }
 };
 
+/**
+ * API for updating a user's role
+ * @param {request} req
+ * @param {response} res
+ * */
 exports.update = async (req, res, next) => {
   const { role, id } = req.body;
   // Verifying if role and id is presnt
@@ -152,6 +168,11 @@ exports.update = async (req, res, next) => {
   }
 };
 
+/**
+ * API for deleting a user
+ * @param {request} req
+ * @param {response} res
+ * */
 exports.deleteUser = async (req, res, next) => {
   const { id } = req.body;
   await User.findById(id)
@@ -166,6 +187,11 @@ exports.deleteUser = async (req, res, next) => {
     );
 };
 
+/**
+ * API for getting all the users
+ * @param {request} req
+ * @param {response} res
+ * */
 exports.getUsers = async (req, res, next) => {
   await User.find({})
     .then((users) => {
