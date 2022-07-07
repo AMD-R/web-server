@@ -108,6 +108,11 @@ exports.userAuthAPI = (req, res, next) => {
       .json({message: 'Permissions Denied'});
   }
 };
+/**
+ * Check if the request is made by a registered AMD-R (API version)
+ * @param {request} req
+ * @param {response} res
+ * */
 exports.amdrAuthAPI = async (req, res, next) => {
   const { name, password } = req.body;
 
