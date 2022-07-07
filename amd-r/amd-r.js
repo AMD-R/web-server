@@ -123,8 +123,8 @@ async function getAMDRData(req, res, next) {
         container.name = name;
       } else {
         // Set values to 0 there is nothing
-        container.gps.lon = Number(0);
-        container.gps.lat = Number(0);
+        container.gps.lon = undefined;
+        container.gps.lat = undefined;
         container.mission = "Can't fetch any data";
         container.battery = Number(0);
         container.speed = Number(0);
