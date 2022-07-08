@@ -43,7 +43,7 @@
                              document.documentElement.scrollTop = 0
                              return display.textContent = `${dataUpdate.message}. ${dataUpdate.error ? dataUpdate.error : ''}`
                          }
-                         location.assign('/admin')
+                         location.reload()
                      })
                  });
                  deleteUser.forEach((button, i)=> {
@@ -61,7 +61,7 @@
                              document.documentElement.scrollTop = 0
                              return display.textContent = `${dataUpdate.message}. ${dataUpdate.error ? dataUpdate.error : ''}`
                          }
-                         location.assign('/admin')
+                         location.reload()
                      })
                  })
              })
