@@ -3,6 +3,8 @@ const data = require("../model/amd-r-data");
 const amdr = require("../model/AMD-R");
 const bcrypt = require("bcryptjs");
 const Mongoose = require("mongoose");
+const User = require("../model/User");
+const { createHmac } = require('node:crypto');
 
 async function subscriber(req, res, next) {
   const { gps, battery, speed, mission } = req.body;
@@ -142,10 +144,30 @@ async function getAMDRData(req, res, next) {
     });
 }
 
+async function verifyUser(req, res, next) {
+  const { otp, id } = req.body;
+  const user = await User.findById(id);
+  const interval = 30 * 1000;
+
+  const hmac = createHmac("sha256", user.OTP);
+  let time = new Date;
+  time = Math.floor((time - new Date(0)) / interval)
+
+  hmac.update(time.toString());
+  const digested = hmac.digest().toString('hex');
+
+  if (digested === otp) {
+    res.status(201).json({ results: true });
+  } else {
+    res.status(401).json({ results: false });
+  }
+}
+
 module.exports = {
   subscriber,
   register,
   getAMDRs,
   verifyAMDR,
   getAMDRData,
+  verifyUser,
 };

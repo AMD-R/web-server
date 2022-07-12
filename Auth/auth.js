@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { jwtSecret } = require('../config.json');
 const { request, response } = require('express');
+const { generateKey, createHmac } = require('node:crypto');
 
 if (!jwtSecret) {
   console.log('No jwtSecret found, generating...Please don\'t terminate process');
@@ -28,10 +29,21 @@ if (!jwtSecret) {
  * */
 exports.register = async (req, res, next) => {
   const { username, password } = req.body;
+  const key = new Promise((resolve, reject) => {
+    generateKey("hmac", { length: 256 }, (err, key) => {
+      if (err) {
+        res.cookie("redirect", "Error");
+        res.status(400).redirect('/register');
+      }
+      resolve(key.export().toString('hex'));
+    });
+  })
+
   bcrypt.hash(password, 10).then(async (hash) => {
     await User.create({
       username,
       password: hash,
+      OTP: await key,
     })
       .then((user) => {
         const maxAge = 3 * 60 * 60;
@@ -197,3 +209,41 @@ exports.getUsers = async (req, res, next) => {
       res.status(401).json({ message: "Not successful", error: err.message })
     );
 };
+
+/**
+ * API for getting OTP
+ * @param {request} req
+ * @param {response} res
+ * */
+exports.getOTP = async (req, res, next) => {
+  const token = req.cookies.jwt;
+  const interval = 30 * 1000;
+  // If there is token
+  if (token) {
+    jwt.verify(token, jwtSecret, (err, decodedToken) => {
+      // If there is a problem verifying token
+      if (err) {
+        return res.status(401).render('error/401');
+      } else {
+        // Everything good
+        User.findById(decodedToken.id)
+          .then((user) => { // If user found
+            const hmac = createHmac("sha256", user.OTP);
+            let time = new Date;
+            time = Math.floor((time - new Date(0)) / interval)
+
+            hmac.update(time.toString());
+            const digested = hmac.digest().toString('hex');
+            res.status(200).json({ otp: digested, id: decodedToken.id });
+          })
+          .catch((err) => // Error finding user
+            res.status(401).json({ message: "Not successful", error: err.message })
+          );
+      }
+    });
+  } else { // No token
+    return res
+      .status(401)
+      .render('error/401');
+  }
+}
