@@ -24,7 +24,7 @@ if (!jwtSecret) {
 
 /**
  * API for registering
- * @param {request} res
+ * @param {request} req
  * @param {response} res
  * */
 exports.register = async (req, res, next) => {
@@ -69,7 +69,7 @@ exports.register = async (req, res, next) => {
 
 /**
  * API for loggingin
- * @param {request} res
+ * @param {request} req
  * @param {response} res
  * */
 exports.login = async (req, res, next) => {
