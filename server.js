@@ -4,6 +4,7 @@ const app = express();
 const cookieParser = require("cookie-parser");
 const { adminAuth, userAuth, sessionAuth } = require("./middleware/auth.js");
 const { port } = require('./config.json');
+const { join } = require('node:path');
 
 app.set("view engine", "ejs");
 
@@ -31,6 +32,11 @@ app.get("/admin/users", adminAuth, (req, res) => res.render("auth/admin-users"))
 app.get("/admin/amd-r", adminAuth, (req, res) => res.render("auth/admin-amd-r"));
 app.get("/amd-r/*", adminAuth, (req, res) => res.render("amd-r/amd-r"))
 app.get("/basic", userAuth, (req, res) => res.render("auth/user"));
+
+// External js and css
+// https://www.codespeedy.com/how-to-serve-html-and-css-files-using-express-js/
+app.get("/css/*", (req, res) => res.sendFile(join(__dirname, req.path)));
+app.get("/js/*", (req, res) => res.sendFile(join(__dirname, req.path)));
 app.get("*", (req, res) => res.status(404).render('error/404'));
 
 const server = app.listen(port, () =>
