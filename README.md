@@ -32,4 +32,6 @@ A `config.json` file must be created before the starting the server. A sample `c
   * [ ] Make AMD-R verification using RSA signing
   * [ ] Write jsdocs
   * [ ] Add feature to disable registration for AMD-R/users
-  * [ ] User Authentication without JS 
+  * [x] User Authentication without JS 
+  * [ ] /api/amd-r/getData using get
+  * [ ] Login/Register render using local variables

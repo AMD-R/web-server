@@ -16,6 +16,10 @@ const UserSchema = new Mongoose.Schema({
     default: "Basic",
     required: true,
   },
+  OTP: {
+    type: String,
+    required: true,
+  }
 }, {
   collection: "users"
 });

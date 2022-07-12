@@ -1,31 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>User page</title>
-  </head>
-  <body>
-    <h1>Users</h1>
-    <ul></ul>
-    <button class="logout"> <a href="/logout">Log Out</a></button>
-    <script>
-     const ul = document.querySelector('ul')
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>User page</title>
+        <!-- https://cdnjs.com/libraries/qrcodejs -->
+        <!-- https://github.com/davidshimjs/qrcodejs -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    </head>
+    <body>
+        <h1>QR Code</h1>
+        <div>Raw OTP Data: <span id="raw"></span></div>
+        <div id="qrcode"></div>
+        <button onclick="getOTP()">Regenerate QR Code</button>
+        <script>
+         const qrcode = document.getElementById("qrcode")
+         const raw_e = document.getElementById("raw")
+         // https://code-boxx.com/generate-qr-code-javascript/
+         async function getOTP() {
+             // Fetching data
+             const res = await fetch('/api/auth/getOTP');
+             const data = await res.json();
 
-     const getUsers = async() => {
-       const res = await fetch('/api/auth/getUsers')
-       const data = await res.json()
-       data.user.map((mappedUser)=> {
-         if (mappedUser.username !== 'admin') {
-           let li = `<li> <b>Username</b> => ${mappedUser.username} <br> <b>Role</b> => ${mappedUser.role} </li>`
-           ul.innerHTML += li
-         } else {
-           return null
+             // Changing Raw data
+             raw_e.innerHTML = data.otp;
+
+             // Changing QR Code
+             qrcode.innerHTML = "";
+             var qrc = new QRCode(qrcode, JSON.stringify(data));
          }
-       })
-     }
-     getUsers()
-    </script>
-  </body>
+         async function otpLoop() {
+             getOTP();
+             setTimeout(otpLoop, 30 * 1000);
+         }
+         otpLoop();
+        </script>
+    </body>
 </html>
