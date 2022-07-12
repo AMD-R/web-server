@@ -1,153 +1,155 @@
 <!DOCTYPE html>
-<html lang="en"><head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AMD-R Dashboard</title>
-    <!--Leafletjs------------------------------------------------------------->
-    <!------------------------------------------------------------------------>
-    <!--https://leafletjs.com/examples/quick-start/--------------------------->
-    <!--https://wiki.openstreetmap.org/wiki/Deploying_your_own_Slippy_Map----->
-    <!------------------------------------------------------------------------>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" crossorigin="" />
-    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" crossorigin=""></script>
-    <style type="text/css">
-     table.dashboard {
-         width: 100%;
-         height: 86vh;
-     }
-     td.dashboard {
-         border: 1px solid;
-         width: 33%;
-         text-align: center;
-     }
-     tr.dashboard {
-         height: 50%;
-     }
-     div.bar-frame {
-         outline: solid;
-         outline-width: 1px;
-         outline-color: black;
-         width: 80%;
-         height: 1vh;
-         position: relative;
-         /* https://www.freecodecamp.org/news/how-to-center-anything-with-css-align-a-div-text-and-more/ */
-         margin: 0 auto;
-     }
-     div.bar {
-         background: black;
-         height:100%;
-         position: absolute;
-     }
-     h1.title {
-         font-size: 5vh;
-         text-align: center;
-     }
-     button.call-home {
-         width: 49%;
-         height: 70%;
-     }
-     div#map {
-         height: 93%;
-     }
-    </style>
-</head>
-<body>
-    <h1 class="title">Dashboard for <span id="name">AMD-R</span> </h1>
-    <table class="dashboard">
-        <tbody><tr class="dashboard">
-            <td class="dashboard">
-                Call/Home
-                <hr>
-                <button class="call-home">MAIL</button>
-                <button class="call-home">HOME</button>
-            </td>
-            <td class="dashboard">
-                Battery
-                <hr>
-                <div id="battery">0%</div>
-                <div class="bar-frame">
-                    <div id="battery-bar" class="bar">
-                    </div>
-                </div></td>
-            <td rowspan="2" class="dashboard">
-                Map
-                <hr>
-                <div id="map"></div>
-                <div>If there are any errors in the map please report it to
-                    <a href="https://www.openstreetmap.org/fixthemap">Open Street Maps</a>
-                </div>
-            </td>
-        </tr>
-        <tr class="dashboard">
-            <td class="dashboard">
-                Task
-                <hr>
-                <div id="task">None</div>
-            </td>
-            <td class="dashboard">
-                Speed
-                <hr>
-                <div id="speed">0 m/s</div>
-                <div class="bar-frame">
-                    <div id="speed-bar" class="bar"></div>
-                </div>
-            </td>
-        </tr>
-        </tbody></table>
-    <script>
-     // Getting AMD-R id
-     const id = window.location.pathname.split('/')[2];
-
-     // Setting up variables
-     let name = document.getElementById('name');
-     let battery = document.getElementById('battery');
-     let battery_bar = document.getElementById('battery-bar');
-     let speed = document.getElementById('speed');
-     let speed_bar = document.getElementById('speed-bar');
-     let task = document.getElementById('task');
-
-     // Setting up openstreet map
-     var coords = [2.947, 101.8752];
-     // Map
-     var map = L.map('map').setView(coords, 19);
-     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-         maxZoom: 19,
-         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-     }).addTo(map);
-     // Marker
-     var marker = L.marker(coords).addTo(map);
-     marker.on('move', (e) => {
-         map.panTo(e.latlng);
-     });
-
-     async function getData(id) {
-         const res = await fetch('/api/amd-r/getData', {
-             method: 'POST',
-             body: JSON.stringify({id}),
-             headers: { 'Content-Type': 'application/json' }
-         });
-         const data = await res.json()
-
-         // Changing elements
-         name.innerHTML = data.name;
-         battery.innerHTML = data.battery + "%";
-         battery_bar.style.width = data.battery + "%";
-         speed.innerHTML = data.speed + " m/s";
-         speed_bar.style.width = data.speed / 2 * 100 + "%";
-         task.innerHTML = data.mission;
-
-         // Updating map
-         // Setting up coords
-         if (data.gps.lat != undefined && data.gps.lon != undefined) {
-             coords = data.gps;
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+        <title>AMD-R Dashboard</title>
+        <!--Leafletjs------------------------------------------------------------->
+        <!------------------------------------------------------------------------>
+        <!--https://leafletjs.com/examples/quick-start/--------------------------->
+        <!--https://wiki.openstreetmap.org/wiki/Deploying_your_own_Slippy_Map----->
+        <!------------------------------------------------------------------------>
+        <link crossorigin="" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css" integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ==" rel="stylesheet" />
+        <script crossorigin="" integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ==" src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"></script>
+        <style type="text/css">
+         table.dashboard {
+             width: 100%;
+             height: 86vh;
          }
-         marker.setLatLng(coords);
+         td.dashboard {
+             border: 1px solid;
+             width: 33%;
+             text-align: center;
+         }
+         tr.dashboard {
+             height: 50%;
+         }
+         div.bar-frame {
+             outline: solid;
+             outline-width: 1px;
+             outline-color: black;
+             width: 80%;
+             height: 1vh;
+             position: relative;
+             /* https://www.freecodecamp.org/news/how-to-center-anything-with-css-align-a-div-text-and-more/ */
+             margin: 0 auto;
+         }
+         div.bar {
+             background: black;
+             height:100%;
+             position: absolute;
+         }
+         h1.title {
+             font-size: 5vh;
+             text-align: center;
+         }
+         button.call-home {
+             width: 49%;
+             height: 70%;
+         }
+         div#map {
+             height: 93%;
+         }
+        </style>
+    </head>
+    <body>
+        <h1 class="title">Dashboard for <span id="name">AMD-R</span> </h1>
+        <table class="dashboard">
+            <tr class="dashboard">
+                <td class="dashboard">
+                    Call/Home
+                    <hr>
+                    <button class="call-home">MAIL</button>
+                    <button class="call-home">HOME</button>
+                </td>
+                <td class="dashboard">
+                    Battery
+                    <hr>
+                    <div id="battery">0%</div>
+                    <div class="bar-frame">
+                        <div class="bar" id="battery-bar">
+                        </div>
+                    </div>
+                </td>
+                <td class="dashboard" rowspan="2">
+                    Map
+                    <hr>
+                    <div id="map"></div>
+                    <div>If there are any errors in the map please report it to
+                        <a href="https://www.openstreetmap.org/fixthemap">Open Street Maps</a>
+                    </div>
+                </td>
+            </tr>
+            <tr class="dashboard">
+                <td class="dashboard">
+                    Task
+                    <hr>
+                    <div id="task">None</div>
+                </td>
+                <td class="dashboard">
+                    Speed
+                    <hr>
+                    <div id="speed">0 m/s</div>
+                    <div class="bar-frame">
+                        <div class="bar" id="speed-bar"></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <script>
+         // Getting AMD-R id
+         const id = window.location.pathname.split('/')[2];
 
-         setTimeout(() => {
-             getData(id)
-         }, 1000);
-     };
-     getData(id, map);
-    </script>
-</body>
+         // Setting up variables
+         let name = document.getElementById('name');
+         let battery = document.getElementById('battery');
+         let battery_bar = document.getElementById('battery-bar');
+         let speed = document.getElementById('speed');
+         let speed_bar = document.getElementById('speed-bar');
+         let task = document.getElementById('task');
+
+         // Setting up openstreet map
+         var coords = [2.947, 101.8752];
+         // Map
+         var map = L.map('map').setView(coords, 19);
+         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+             maxZoom: 19,
+             attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+         }).addTo(map);
+         // Marker
+         var marker = L.marker(coords).addTo(map);
+         marker.on('move', (e) => {
+             map.panTo(e.latlng);
+         });
+
+         async function getData(id) {
+             const res = await fetch('/api/amd-r/getData', {
+                 method: 'POST',
+                 body: JSON.stringify({id}),
+                 headers: { 'Content-Type': 'application/json' }
+             });
+             const data = await res.json()
+
+             // Changing elements
+             name.innerHTML = data.name;
+             battery.innerHTML = data.battery + "%";
+             battery_bar.style.width = data.battery + "%";
+             speed.innerHTML = data.speed + " m/s";
+             speed_bar.style.width = data.speed / 2 * 100 + "%";
+             task.innerHTML = data.mission;
+
+             // Updating map
+             // Setting up coords
+             if (data.gps.lat != undefined && data.gps.lon != undefined) {
+                 coords = data.gps;
+             }
+             marker.setLatLng(coords);
+
+             setTimeout(() => {
+                 getData(id)
+             }, 1000);
+         };
+         getData(id, map);
+        </script>
+    </body>
 </html>
