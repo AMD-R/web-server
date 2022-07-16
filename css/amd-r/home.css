@@ -74,7 +74,7 @@ h1{
 .menu{
     display:grid;
     border: 1px solid black;
-    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+    grid-template-columns:repeat(auto-fit,minmax(100px,1fr));
     padding: 100px;
     align-items: center;
     justify-content: center;
@@ -83,10 +83,11 @@ h1{
 }
 
 .menu_item {
-    display: flex;
+    display:flex;
     align-items: center;
-    justify-content: center;
-    padding:5em;
+    justify-content:center;
+    color:var(--clr-dark);
+    padding:1em;
 
 }
 
@@ -107,10 +108,12 @@ header {
 }
 .menu_item:hover{
     opacity:0.7;
-    text-decoration:underline;
+    text-decoration:none;
     transform: scale(1.2);
 
 }
+
+
 footer {
     background-color:var(--clr-dark);
     color:var(--clr-accent);
