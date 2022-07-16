@@ -5,7 +5,13 @@ const bcrypt = require("bcryptjs");
 const Mongoose = require("mongoose");
 const User = require("../model/User");
 const { createHmac } = require('node:crypto');
+const { request, response } = require('express');
 
+/**
+ * Acts as a "ros" subscriber for data from AMD-R
+ * @param { request } req
+ * @param { response } res
+ */
 async function subscriber(req, res, next) {
   const { gps, battery, speed, mission } = req.body;
   const model = Mongoose.model(req.id, data, req.id);
@@ -37,6 +43,11 @@ async function subscriber(req, res, next) {
   }
 }
 
+/**
+ * API for the AMD-Rs to register to the network
+ * @param { request } req
+ * @param { response } res
+ */
 async function register(req, res, next) {
   const { name, password } = req.body;
 
@@ -64,8 +75,9 @@ async function register(req, res, next) {
 }
 
 /**
- * Verifies the AMD-R
- * @param {} req
+ * API for verifying the AMD-R
+ * @param { request } req
+ * @param { response } res
  * */
 async function verifyAMDR(req, res, next) {
   const { id } = req.body;
@@ -85,6 +97,11 @@ async function verifyAMDR(req, res, next) {
     });
 }
 
+/**
+ * API for getting all the AMD-Rs
+ * @param { request } req
+ * @param { response } res
+ * */
 async function getAMDRs(req, res, next) {
   await amdr.find({})
     .then((amdrs) => {
@@ -104,6 +121,11 @@ async function getAMDRs(req, res, next) {
     }))
 }
 
+/**
+ * API for getting the data of an AMD-R
+ * @param { request } req
+ * @param { response } res
+ * */
 async function getAMDRData(req, res, next) {
   const { id } = req.body;
   const model = Mongoose.model(id, data, id);
@@ -144,6 +166,11 @@ async function getAMDRData(req, res, next) {
     });
 }
 
+/**
+ * API for user authentication for the AMD-R
+ * @param { request } req
+ * @param { response } res
+ * */
 async function verifyUser(req, res, next) {
   const { otp, id } = req.body;
   const user = await User.findById(id);
