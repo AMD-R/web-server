@@ -219,6 +219,9 @@ async function verifyUser(req, res, next) {
   const user = await User.findById(id);
   const interval = 30 * 1000;
 
+  if (!user)
+    return res.status(400).json({ message: "Invalid User" });
+
   const hmac = createHmac("sha256", user.OTP);
   let time = new Date;
   time = Math.floor((time - new Date(0)) / interval)
