@@ -76,7 +76,7 @@ h1 {
 .menu {
   display: grid;
   border: 1px solid black;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
   padding: 100px;
   align-items: center;
   justify-content: center;
@@ -88,7 +88,8 @@ h1 {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 5em;
+  color: var(--clr-dark);
+  padding: 1em;
 }
 
 .Introduction {
@@ -106,10 +107,10 @@ header {
   font-size: 30px;
 }
 
-.menu_item:hover {
-  opacity: 0.7;
-  text-decoration: underline;
-  transform: scale(1.2);
+.menu_item:hover{
+    opacity: 0.7;
+    text-decoration: none;
+    transform: scale(1.2);
 }
 
 footer {
