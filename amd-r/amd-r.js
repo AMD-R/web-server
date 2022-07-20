@@ -4,7 +4,7 @@ const amdr = require("../model/AMD-R");
 const bcrypt = require("bcryptjs");
 const Mongoose = require("mongoose");
 const User = require("../model/User");
-const { createHmac } = require('node:crypto');
+const { createHmac, verify, createPublicKey } = require('node:crypto');
 const { request, response } = require('express');
 
 /**
@@ -13,11 +13,58 @@ const { request, response } = require('express');
  * @param { response } res
  */
 async function subscriber(req, res, next) {
-  const { gps, battery, speed, mission, Time } = req.body;
-  const model = Mongoose.model(req.id, data, req.id);
-  const cTime = new Date();
+  const { gps, battery, speed, mission, Time, signature, name } = req.body;
+  // Checking if there is a signature
+  if (!signature)
+    return res.status(401).json({ message: "No message signature given" });
 
+  // Getting user id and public key
+  let id;
+  let key;
+  try {
+    const user = await amdr.findOne({ name });
+    id = user._id.toString();
+    key = user.key;
+    if (!user.verified)
+      return res.status(401).json({
+        message: "AMD-R not verified."
+      });
+  } catch (error) {
+    return res.status(400).json({
+      message: "An error occurred",
+      error: error.message,
+    });
+  }
+  // Creating model
+  const model = Mongoose.model(id, data, id);
+
+  // Checking all the message data
   if (gps && battery && speed && mission && Time) {
+    const message = JSON.stringify({
+      gps,
+      battery,
+      speed,
+      mission,
+      Time,
+    });
+
+    // Getting key
+    const keyOptions = {
+      key: key,
+      type: 'spki',
+      format: 'pem',
+      encoding: 'utf-8'
+    };
+    const publicKey = createPublicKey(keyOptions)
+
+    // Verifying message
+    const verification = verify(null, message, publicKey, Buffer.from(signature, "hex"));
+    if (!verification)
+      return res.status(401).json({
+        message: "Invalid message signature",
+      });
+
+    // Writing data
     await model.create({
       gps,
       battery,
@@ -39,6 +86,7 @@ async function subscriber(req, res, next) {
         })
       })
   } else {
+    // Data incomplete
     return res.status(400).json({ message: "Not enough data given" });
   }
 }
@@ -49,29 +97,24 @@ async function subscriber(req, res, next) {
  * @param { response } res
  */
 async function register(req, res, next) {
-  const { name, password } = req.body;
+  const { name, key } = req.body;
 
-  if (password.length < 6) {
-    return res.status(400).json({ message: "Password less than 6 characters" });
-  }
-  bcrypt.hash(password, 10).then(async (hash) => {
-    await amdr.create({
-      name,
-      password: hash,
-      verified: false,
-    })
-      .then((user) => {
-        res.status(201).json({
-          message: "AMD-R successfully registered",
-        })
+  await amdr.create({
+    name,
+    verified: false,
+    key,
+  })
+    .then((user) => {
+      res.status(201).json({
+        message: "AMD-R successfully registered",
       })
-      .catch((error) => {
-        res.status(400).json({
-          message: "AMD-R registration failed",
-          error: error.message,
-        })
-      });
-  });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        message: "AMD-R registration failed",
+        error: error.message,
+      })
+    });
 }
 
 /**

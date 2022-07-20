@@ -8,15 +8,14 @@ const AMDSchema = new Mongoose.Schema({
     unique: true,
     required: true,
   },
-  password: {
-    type: String,
-    minlength: 6,
-    required: true,
-  },
   verified: {
     type: Boolean,
     default: false,
-  }
+  },
+  key: {
+    type: String,
+    required: true,
+  },
 }, {
   collection: "amd-rs",
 });
