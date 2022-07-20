@@ -49,29 +49,24 @@ async function subscriber(req, res, next) {
  * @param { response } res
  */
 async function register(req, res, next) {
-  const { name, password } = req.body;
+  const { name, key } = req.body;
 
-  if (password.length < 6) {
-    return res.status(400).json({ message: "Password less than 6 characters" });
-  }
-  bcrypt.hash(password, 10).then(async (hash) => {
-    await amdr.create({
-      name,
-      password: hash,
-      verified: false,
-    })
-      .then((user) => {
-        res.status(201).json({
-          message: "AMD-R successfully registered",
-        })
+  await amdr.create({
+    name,
+    verified: false,
+    key,
+  })
+    .then((user) => {
+      res.status(201).json({
+        message: "AMD-R successfully registered",
       })
-      .catch((error) => {
-        res.status(400).json({
-          message: "AMD-R registration failed",
-          error: error.message,
-        })
-      });
-  });
+    })
+    .catch((error) => {
+      res.status(400).json({
+        message: "AMD-R registration failed",
+        error: error.message,
+      })
+    });
 }
 
 /**
