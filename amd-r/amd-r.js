@@ -25,6 +25,10 @@ async function subscriber(req, res, next) {
     const user = await amdr.findOne({ name });
     id = user._id.toString();
     key = user.key;
+    if (!user.verified)
+      return res.status(401).json({
+        message: "AMD-R not verified."
+      });
   } catch (error) {
     return res.status(400).json({
       message: "An error occurred",
