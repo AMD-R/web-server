@@ -13,22 +13,22 @@ const { request, response } = require('express');
  * @param { response } res
  */
 async function subscriber(req, res, next) {
-  const { gps, battery, speed, mission } = req.body;
+  const { gps, battery, speed, mission, Time } = req.body;
   const model = Mongoose.model(req.id, data, req.id);
   const cTime = new Date();
 
-  if (gps && battery && speed && mission) {
+  if (gps && battery && speed && mission && Time) {
     await model.create({
       gps,
       battery,
       speed,
       mission,
-      Time: cTime.toGMTString()
+      Time,
     })
       .then((amdr_data) => {
         res.status(200).json({
           message: "Succesfully Recieved AMD-R data",
-          time: cTime.toGMTString(),
+          time: Time,
           name: req.name,
         })
       })
