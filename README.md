@@ -29,7 +29,7 @@ A `config.json` file must be created before the starting the server. A sample `c
   * [ ] Write better views
   * [ ] Better looking frontend
   * [ ] Organize server requests
-  * [ ] Make AMD-R verification using RSA signing
+  * [x] Make AMD-R verification using RSA signing
   * [ ] Write jsdocs
   * [ ] Add feature to disable registration for AMD-R/users
   * [x] User Authentication without JS 
