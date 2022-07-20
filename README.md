@@ -35,3 +35,4 @@ A `config.json` file must be created before the starting the server. A sample `c
   * [x] User Authentication without JS 
   * [ ] /api/amd-r/getData using get
   * [ ] Login/Register render using local variables
+  * [ ] MFA for users 
