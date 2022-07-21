@@ -107,6 +107,7 @@ async function register(req, res, next) {
     .then((user) => {
       res.status(201).json({
         message: "AMD-R successfully registered",
+        id: user._id,
       })
     })
     .catch((error) => {
