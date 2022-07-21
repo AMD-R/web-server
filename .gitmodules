@@ -1,0 +1,3 @@
+[submodule "web-server-views"]
+	path = web-server-views
+	url = https://github.com/AMD-R/web-server-views.git
