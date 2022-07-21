@@ -143,11 +143,11 @@ exports.update = async (req, res, next) => {
               //Monogodb error checker
               if (err) {
                 return res
-                  .status("400")
+                  .status(400)
                   .json({ message: "An error occurred", error: err.message });
                 process.exit(1);
               }
-              res.status("201").json({ message: "Update successful", user });
+              res.status(201).json({ message: "Update successful", user });
             });
           } else {
             res.status(400).json({ message: "User is already an Admin" });
