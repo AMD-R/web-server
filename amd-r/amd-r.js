@@ -173,9 +173,10 @@ async function getAMDRs(req, res, next) {
 async function getAMDRData(req, res, next) {
   const { id } = req.query;
   let model, name;
+  // Getting data and creating model for AMD-R
   try {
-    model = Mongoose.model(id, data, id);
     name = await (await amdr.findById(id)).name
+    model = Mongoose.model(id, data, id);
   } catch {
     return res.status(400).json({ message: "AMD-R not found" })
   }
