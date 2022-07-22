@@ -8,6 +8,7 @@ const { join } = require('node:path');
 
 // Setting View Engines
 app.set("view engine", "ejs");
+app.set("views", join(process.cwd(), "/web-server-views/views"))
 
 // Connecting to Database
 connectDB();
@@ -53,9 +54,9 @@ app.get("/basic", userAuth, (req, res) => res.render("auth/user"));
 
 // External js, media and css request
 // https://www.codespeedy.com/how-to-serve-html-and-css-files-using-express-js/
-app.get("/css/*", (req, res) => res.sendFile(join(__dirname, req.path)));
-app.get("/js/*", (req, res) => res.sendFile(join(__dirname, req.path)));
-app.get("/media/*", (req, res) => res.sendFile(join(__dirname, req.path)));
+app.get("/css/*", (req, res) => res.sendFile(join(__dirname, "/web-server-views", req.path)));
+app.get("/js/*", (req, res) => res.sendFile(join(__dirname, "/web-server-views", req.path)));
+app.get("/media/*", (req, res) => res.sendFile(join(__dirname, "/web-server-views", req.path)));
 app.get("*", (req, res) => res.status(404).render('error/404'));
 
 const server = app.listen(port, () =>
