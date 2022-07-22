@@ -171,9 +171,14 @@ async function getAMDRs(req, res, next) {
  * @param { response } res
  * */
 async function getAMDRData(req, res, next) {
-  const { id } = req.body;
-  const model = Mongoose.model(id, data, id);
-  const { name } = await amdr.findById(id)
+  const { id } = req.query;
+  let model, name;
+  try {
+    model = Mongoose.model(id, data, id);
+    name = await (await amdr.findById(id)).name
+  } catch {
+    return res.status(400).json({ message: "AMD-R not found" })
+  }
   // https://stackoverflow.com/questions/12467102/how-to-get-the-latest-and-oldest-record-in-mongoose-js-or-just-the-timespan-bet
   model.findOne({}, [], { sort: { Time: -1 } })
     .then(query => {

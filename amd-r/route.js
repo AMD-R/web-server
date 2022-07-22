@@ -10,7 +10,7 @@ router.route('/subscriber').post(subscriber);
 router.route('/register').post(register);
 router.route('/getAMD-Rs').get(adminAuthAPI, getAMDRs);
 router.route('/verifyAMD-R').patch(adminAuthAPI, verifyAMDR);
-router.route('/getData').post(adminAuthAPI, getAMDRData);
+router.route('/getData').get(adminAuthAPI, getAMDRData);
 router.route('/verifyUser').post(verifyUser);
 
 module.exports = router;
