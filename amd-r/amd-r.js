@@ -1,22 +1,22 @@
 #!/usr/bin/env node
-const data = require("../model/amd-r-data");
-const amdr = require("../model/AMD-R");
-const bcrypt = require("bcryptjs");
-const Mongoose = require("mongoose");
-const User = require("../model/User");
+const data = require('../model/amd-r-data');
+const amdr = require('../model/AMD-R');
+const Mongoose = require('mongoose');
+const User = require('../model/User');
 const { createHmac, verify, createPublicKey } = require('node:crypto');
 const { request, response } = require('express');
 
 /**
- * Acts as a "ros" subscriber for data from AMD-R
+ * Acts as a 'ros' subscriber for data from AMD-R
  * @param { request } req
  * @param { response } res
  */
-async function subscriber(req, res, next) {
+async function subscriber(req, res) {
   const { gps, battery, speed, mission, Time, signature, name } = req.body;
   // Checking if there is a signature
-  if (!signature)
-    return res.status(401).json({ message: "No message signature given" });
+  if (!signature) {
+    return res.status(401).json({ message: 'No message signature given' });
+  }
 
   // Getting user id and public key
   let id;
@@ -25,13 +25,14 @@ async function subscriber(req, res, next) {
     const user = await amdr.findOne({ name });
     id = user._id.toString();
     key = user.key;
-    if (!user.verified)
+    if (!user.verified) {
       return res.status(401).json({
-        message: "AMD-R not verified."
+        message: 'AMD-R not verified.',
       });
+    }
   } catch (error) {
     return res.status(400).json({
-      message: "An error occurred",
+      message: 'An error occurred',
       error: error.message,
     });
   }
@@ -53,16 +54,17 @@ async function subscriber(req, res, next) {
       key: key,
       type: 'spki',
       format: 'pem',
-      encoding: 'utf-8'
+      encoding: 'utf-8',
     };
-    const publicKey = createPublicKey(keyOptions)
+    const publicKey = createPublicKey(keyOptions);
 
     // Verifying message
-    const verification = verify(null, message, publicKey, Buffer.from(signature, "hex"));
-    if (!verification)
+    const verification = verify(null, message, publicKey, Buffer.from(signature, 'hex'));
+    if (!verification) {
       return res.status(401).json({
-        message: "Invalid message signature",
+        message: 'Invalid message signature',
       });
+    }
 
     // Writing data
     await model.create({
@@ -72,22 +74,22 @@ async function subscriber(req, res, next) {
       mission,
       Time,
     })
-      .then((amdr_data) => {
+      .then(() => {
         res.status(200).json({
-          message: "Succesfully Recieved AMD-R data",
+          message: 'Succesfully Recieved AMD-R data',
           time: Time,
           name: req.name,
-        })
+        });
       })
       .catch((err) => {
         res.status(400).json({
-          message: "Data updating failed",
+          message: 'Data updating failed',
           error: err.message,
-        })
-      })
+        });
+      });
   } else {
     // Data incomplete
-    return res.status(400).json({ message: "Not enough data given" });
+    return res.status(400).json({ message: 'Not enough data given' });
   }
 }
 
@@ -96,7 +98,7 @@ async function subscriber(req, res, next) {
  * @param { request } req
  * @param { response } res
  */
-async function register(req, res, next) {
+async function register(req, res) {
   const { name, key } = req.body;
 
   await amdr.create({
@@ -106,15 +108,15 @@ async function register(req, res, next) {
   })
     .then((user) => {
       res.status(201).json({
-        message: "AMD-R successfully registered",
+        message: 'AMD-R successfully registered',
         id: user._id,
-      })
+      });
     })
     .catch((error) => {
       res.status(400).json({
-        message: "AMD-R registration failed",
+        message: 'AMD-R registration failed',
         error: error.message,
-      })
+      });
     });
 }
 
@@ -123,21 +125,22 @@ async function register(req, res, next) {
  * @param { request } req
  * @param { response } res
  * */
-async function verifyAMDR(req, res, next) {
+async function verifyAMDR(req, res) {
   const { id } = req.body;
-  if (!id)
-    return res.status(400).json({ message: "No AMD-R ID given" });
+  if (!id) {
+    return res.status(400).json({ message: 'No AMD-R ID given' });
+  }
   await amdr.findByIdAndUpdate(id, { verified: true })
-    .then((value) => {
+    .then(() => {
       res.status(200).json({
-        message: "Succesfully Verified AMD-R",
-      })
+        message: 'Succesfully Verified AMD-R',
+      });
     })
     .catch((err) => {
       res.status(400).json({
-        message: "Unable to Verify AMD-R",
+        message: 'Unable to Verify AMD-R',
         error: err.message,
-      })
+      });
     });
 }
 
@@ -146,10 +149,10 @@ async function verifyAMDR(req, res, next) {
  * @param { request } req
  * @param { response } res
  * */
-async function getAMDRs(req, res, next) {
+async function getAMDRs(req, res) {
   await amdr.find({})
     .then((amdrs) => {
-      const formated = amdrs.map((amdr) => {
+      const formated = amdrs.map(() => {
         const container = new Object;
         container.name = amdr.name;
         container.id = amdr._id;
@@ -157,12 +160,12 @@ async function getAMDRs(req, res, next) {
 
         return container;
       });
-      res.status(200).json({ "AMD-Rs": formated });
+      res.status(200).json({ 'AMD-Rs': formated });
     })
     .catch((err) => res.status(400).json({
-      message: "Failed to fet AMD-Rs",
+      message: 'Failed to fet AMD-Rs',
       error: err.message,
-    }))
+    }));
 }
 
 /**
@@ -170,15 +173,15 @@ async function getAMDRs(req, res, next) {
  * @param { request } req
  * @param { response } res
  * */
-async function getAMDRData(req, res, next) {
+async function getAMDRData(req, res) {
   const { id } = req.query;
   let model, name;
   // Getting data and creating model for AMD-R
   try {
-    name = await (await amdr.findById(id)).name
+    name = await (await amdr.findById(id)).name;
     model = Mongoose.model(id, data, id);
   } catch {
-    return res.status(400).json({ message: "AMD-R not found" })
+    return res.status(400).json({ message: 'AMD-R not found' });
   }
   // https://stackoverflow.com/questions/12467102/how-to-get-the-latest-and-oldest-record-in-mongoose-js-or-just-the-timespan-bet
   model.findOne({}, [], { sort: { Time: -1 } })
@@ -199,7 +202,7 @@ async function getAMDRData(req, res, next) {
         // Set values to 0 there is nothing
         container.gps.lon = undefined;
         container.gps.lat = undefined;
-        container.mission = "Can't fetch any data";
+        container.mission = 'Can\'t fetch any data';
         container.battery = Number(0);
         container.speed = Number(0);
         container.name = name;
@@ -210,8 +213,8 @@ async function getAMDRData(req, res, next) {
     })
     .catch(err => {
       res.status(400).json({
-        message: "Unable to get data",
-        error: err.message
+        message: 'Unable to get data',
+        error: err.message,
       });
     });
 }
@@ -221,17 +224,18 @@ async function getAMDRData(req, res, next) {
  * @param { request } req
  * @param { response } res
  * */
-async function verifyUser(req, res, next) {
+async function verifyUser(req, res) {
   const { otp, id } = req.body;
   const user = await User.findById(id);
   const interval = 30 * 1000;
 
-  if (!user)
-    return res.status(400).json({ message: "Invalid User" });
+  if (!user) {
+    return res.status(400).json({ message: 'Invalid User' });
+  }
 
-  const hmac = createHmac("sha256", user.OTP);
+  const hmac = createHmac('sha256', user.OTP);
   let time = new Date;
-  time = Math.floor((time - new Date(0)) / interval)
+  time = Math.floor((time - new Date(0)) / interval);
 
   hmac.update(time.toString());
   const digested = hmac.digest().toString('hex');

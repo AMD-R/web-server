@@ -1,5 +1,5 @@
-const Mongoose = require("mongoose");
-const amdr = require("./AMD-R");
+const Mongoose = require('mongoose');
+// const amdr = require('./AMD-R');
 
 const dataSchema = new Mongoose.Schema({
   gps: {

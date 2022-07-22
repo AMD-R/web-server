@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 
-const { adminAuthAPI } = require("../middleware/auth");
-const { subscriber, register, getAMDRs, verifyAMDR, getAMDRData, verifyUser } = require("./amd-r");
+const { adminAuthAPI } = require('../middleware/auth');
+const { subscriber, register, getAMDRs, verifyAMDR, getAMDRData, verifyUser } = require('./amd-r');
 
 router.route('/subscriber').post(subscriber);
 router.route('/register').post(register);

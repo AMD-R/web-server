@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const Mongoose = require("mongoose");
+const Mongoose = require('mongoose');
 
 const AMDSchema = new Mongoose.Schema({
-  "name": {
+  'name': {
     type: String,
     unique: true,
     required: true,
@@ -17,9 +17,9 @@ const AMDSchema = new Mongoose.Schema({
     required: true,
   },
 }, {
-  collection: "amd-rs",
+  collection: 'amd-rs',
 });
 
-const AMD = Mongoose.model("AMD-R", AMDSchema);
+const AMD = Mongoose.model('AMD-R', AMDSchema);
 
 module.exports = AMD;
