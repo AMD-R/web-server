@@ -98,7 +98,7 @@ exports.login = async (req, res) => {
             jwtSecret,
             {
               // 3hrs in sec
-              expresIn: maxAge,
+              expiresIn: maxAge,
             },
           );
           res.cookie('jwt', token, {
