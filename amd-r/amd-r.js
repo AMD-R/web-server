@@ -152,11 +152,11 @@ async function verifyAMDR(req, res) {
 async function getAMDRs(req, res) {
   await amdr.find({})
     .then((amdrs) => {
-      const formated = amdrs.map(() => {
+      const formated = amdrs.map((map_amdr) => {
         const container = new Object;
-        container.name = amdr.name;
-        container.id = amdr._id;
-        container.verified = amdr.verified;
+        container.name = map_amdr.name;
+        container.id = map_amdr._id;
+        container.verified = map_amdr.verified;
 
         return container;
       });
