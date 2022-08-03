@@ -1,9 +1,6 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config.json');
-const amdr = require('../model/AMD-R');
-const bcrypt = require("bcryptjs");
 const { request, response } = require('express');
-
 
 // Normal middleware
 /**
@@ -18,11 +15,10 @@ exports.adminAuth = (req, res, next) => {
       if (err) {
         return res.status(401).render('error/401');
       } else {
-        if (decodedToken.role !== "admin") {
+        if (decodedToken.role !== 'admin') {
           return res.status(401).render('error/401');
-        } else {
-          next();
         }
+        next();
       }
     });
   } else {
@@ -43,11 +39,10 @@ exports.userAuth = (req, res, next) => {
       if (err) {
         return res.status(401).render('error/401');
       } else {
-        if (decodedToken.role !== "Basic") {
+        if (decodedToken.role !== 'Basic') {
           return res.status(401).render('error/401');
-        } else {
-          next();
         }
+        next();
       }
     });
   } else {
@@ -68,9 +63,9 @@ exports.sessionAuth = (req, res, next) => {
       if (err) {
         return res.status(400).render('error/400');
       } else {
-        if (decodedToken.role == "Basic") {
+        if (decodedToken.role == 'Basic') {
           return res.status(303).redirect('/basic');
-        } else if (decodedToken.role == "admin"){
+        } if (decodedToken.role == 'admin') {
           return res.status(303).redirect('/admin');
         } else {
           return res.render('auth/login-failed');
@@ -80,7 +75,7 @@ exports.sessionAuth = (req, res, next) => {
   } else {
     next();
   }
-}
+};
 
 // API middleware
 /**
@@ -93,19 +88,18 @@ exports.adminAuthAPI = (req, res, next) => {
   if (token) {
     jwt.verify(token, jwtSecret, (err, decodedToken) => {
       if (err) {
-        return res.status(401).json({message: 'Permissions Denied'});
+        return res.status(401).json({ message: 'Permissions Denied' });
       } else {
-        if (decodedToken.role !== "admin") {
-          return res.status(401).json({message: 'Permissions Denied'});
-        } else {
-          next();
+        if (decodedToken.role !== 'admin') {
+          return res.status(401).json({ message: 'Permissions Denied' });
         }
+        next();
       }
     });
   } else {
     return res
       .status(401)
-      .json({message: 'Permissions Denied'});
+      .json({ message: 'Permissions Denied' });
   }
 };
 /**
@@ -118,18 +112,17 @@ exports.userAuthAPI = (req, res, next) => {
   if (token) {
     jwt.verify(token, jwtSecret, (err, decodedToken) => {
       if (err) {
-        return res.status(401).json({message: 'Permissions Denied'});
+        return res.status(401).json({ message: 'Permissions Denied' });
       } else {
-        if (decodedToken.role !== "Basic") {
-          return res.status(401).json({message: 'Permissions Denied'});
-        } else {
-          next();
+        if (decodedToken.role !== 'Basic') {
+          return res.status(401).json({ message: 'Permissions Denied' });
         }
+        next();
       }
     });
   } else {
     return res
       .status(401)
-      .json({message: 'Permissions Denied'});
+      .json({ message: 'Permissions Denied' });
   }
 };

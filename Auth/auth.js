@@ -1,6 +1,6 @@
-const User = require("../model/User");
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+const User = require('../model/User');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const { jwtSecret } = require('../config.json');
 const { request, response } = require('express');
 const { generateKey, createHmac } = require('node:crypto');
@@ -11,7 +11,7 @@ if (!jwtSecret) {
   // Getting required modules
   const crypto = require('node:crypto');
   const fs = require('node:fs');
-  var config = require('../config.json');
+  const config = require('../config.json');
 
   // Generating and writing
   config.jwtSecret = crypto.randomBytes(32).toString('hex');
@@ -27,23 +27,23 @@ if (!jwtSecret) {
  * @param {request} req
  * @param {response} res
  * */
-exports.register = async (req, res, next) => {
+exports.register = async (req, res) => {
   const { username, password } = req.body;
-  const key = new Promise((resolve, reject) => {
-    generateKey("hmac", { length: 256 }, (err, key) => {
+  const privateKey = new Promise((resolve) => {
+    generateKey('hmac', { length: 256 }, (err, key) => {
       if (err) {
-        res.cookie("redirect", "Error");
+        res.cookie('redirect', 'Error');
         res.status(400).redirect('/register');
       }
       resolve(key.export().toString('hex'));
     });
-  })
+  });
 
   bcrypt.hash(password, 10).then(async (hash) => {
     await User.create({
       username,
       password: hash,
-      OTP: await key,
+      OTP: await privateKey,
     })
       .then((user) => {
         const maxAge = 3 * 60 * 60;
@@ -51,18 +51,19 @@ exports.register = async (req, res, next) => {
           { id: user._id, username, role: user.role },
           jwtSecret,
           {
-            expiresIn: maxAge, // 3hrs
-          }
+            // 3hrs
+            expiresIn: maxAge,
+          },
         );
-        res.cookie("jwt", token, {
+        res.cookie('jwt', token, {
           httpOnly: true,
           maxAge: maxAge * 1000,
         });
-        res.status(201).redirect("/basic");
+        res.status(201).redirect('/basic');
       })
-      .catch((error) => {
-        res.cookie("redirect", "Duplicate Username");
-        res.status(400).redirect("/register");
+      .catch(() => {
+        res.cookie('redirect', 'Duplicate Username');
+        res.status(400).redirect('/register');
       });
   });
 };
@@ -72,21 +73,21 @@ exports.register = async (req, res, next) => {
  * @param {request} req
  * @param {response} res
  * */
-exports.login = async (req, res, next) => {
+exports.login = async (req, res) => {
   const { username, password } = req.body;
 
   // Check if username and password is provided
   if (!username || !password) {
-    res.cookie("redirect", "Incorrect Username or Password");
-    return res.status(400).redirect("/login");
+    res.cookie('redirect', 'Incorrect Username or Password');
+    return res.status(400).redirect('/login');
   }
 
   try {
     const user = await User.findOne({ username });
 
     if (!user) {
-      res.cookie("redirect", "Incorrect Username or Password");
-      return res.status(400).redirect("/login");
+      res.cookie('redirect', 'Incorrect Username or Password');
+      return res.status(400).redirect('/login');
     } else {
       // comparing given password with hashed password
       bcrypt.compare(password, user.password).then(function(result) {
@@ -96,29 +97,31 @@ exports.login = async (req, res, next) => {
             { id: user._id, username, role: user.role },
             jwtSecret,
             {
-              expiresIn: maxAge, // 3hrs in sec
-            }
+              // 3hrs in sec
+              expiresIn: maxAge,
+            },
           );
-          res.cookie("jwt", token, {
+          res.cookie('jwt', token, {
             httpOnly: true,
-            maxAge: maxAge * 1000, // 3hrs in ms
+            // 3hrs in ms
+            maxAge: maxAge * 1000,
           });
-          if (user.role == "admin") {
-            res.status(201).redirect("/admin");
-          } else if (user.role == "Basic") {
-            res.status(201).redirect("/basic");
+          if (user.role == 'admin') {
+            res.status(201).redirect('/admin');
+          } else if (user.role == 'Basic') {
+            res.status(201).redirect('/basic');
           } else {
-            res.cookie("redirect", "Invalid Role");
-            res.status(400).redirect("/login");
+            res.cookie('redirect', 'Invalid Role');
+            res.status(400).redirect('/login');
           }
         } else {
-          res.cookie("redirect", "Incorrect Username or Password");
-          res.status(400).redirect("/login");
+          res.cookie('redirect', 'Incorrect Username or Password');
+          res.status(400).redirect('/login');
         }
       });
     }
   } catch (error) {
-    res.status(400).redirect("/login");
+    res.status(400).redirect('/login');
   }
 };
 
@@ -127,44 +130,43 @@ exports.login = async (req, res, next) => {
  * @param {request} req
  * @param {response} res
  * */
-exports.update = async (req, res, next) => {
+exports.update = async (req, res) => {
   const { role, id } = req.body;
   // Verifying if role and id is presnt
   if (role && id) {
     // Verifying if the value of role is admin
-    if (role === "admin") {
+    if (role === 'admin') {
       // Finds the user with the id
       await User.findById(id)
         .then((user) => {
           // Verifies the user is not an admin
-          if (user.role !== "admin") {
+          if (user.role !== 'admin') {
             user.role = role;
             user.save((err) => {
-              //Monogodb error checker
+              // Monogodb error checker
               if (err) {
                 return res
                   .status(400)
-                  .json({ message: "An error occurred", error: err.message });
-                process.exit(1);
+                  .json({ message: 'An error occurred', error: err.message });
               }
-              res.status(201).json({ message: "Update successful", user });
+              res.status(201).json({ message: 'Update successful', user });
             });
           } else {
-            res.status(400).json({ message: "User is already an Admin" });
+            res.status(400).json({ message: 'User is already an Admin' });
           }
         })
         .catch((error) => {
           res
             .status(400)
-            .json({ message: "An error occurred", error: error.message });
+            .json({ message: 'An error occurred', error: error.message });
         });
     } else {
       res.status(400).json({
-        message: "Role is not admin",
+        message: 'Role is not admin',
       });
     }
   } else {
-    res.status(400).json({ message: "Role or Id not present" });
+    res.status(400).json({ message: 'Role or Id not present' });
   }
 };
 
@@ -173,17 +175,17 @@ exports.update = async (req, res, next) => {
  * @param {request} req
  * @param {response} res
  * */
-exports.deleteUser = async (req, res, next) => {
+exports.deleteUser = async (req, res) => {
   const { id } = req.body;
   await User.findById(id)
     .then((user) => user.remove())
     .then((user) =>
-      res.status(201).json({ message: "User successfully deleted", user })
+      res.status(201).json({ message: 'User successfully deleted', user }),
     )
     .catch((error) =>
       res
         .status(400)
-        .json({ message: "An error occurred", error: error.message })
+        .json({ message: 'An error occurred', error: error.message }),
     );
 };
 
@@ -192,7 +194,7 @@ exports.deleteUser = async (req, res, next) => {
  * @param {request} req
  * @param {response} res
  * */
-exports.getUsers = async (req, res, next) => {
+exports.getUsers = async (req, res) => {
   await User.find({})
     .then((users) => {
       const userFunction = users.map((user) => {
@@ -206,7 +208,7 @@ exports.getUsers = async (req, res, next) => {
       res.status(200).json({ user: userFunction });
     })
     .catch((err) =>
-      res.status(401).json({ message: "Not successful", error: err.message })
+      res.status(401).json({ message: 'Not successful', error: err.message }),
     );
 };
 
@@ -215,7 +217,7 @@ exports.getUsers = async (req, res, next) => {
  * @param {request} req
  * @param {response} res
  * */
-exports.getOTP = async (req, res, next) => {
+exports.getOTP = async (req, res) => {
   const token = req.cookies.jwt;
   const interval = 30 * 1000;
   // If there is token
@@ -227,23 +229,26 @@ exports.getOTP = async (req, res, next) => {
       } else {
         // Everything good
         User.findById(decodedToken.id)
-          .then((user) => { // If user found
-            const hmac = createHmac("sha256", user.OTP);
+          .then((user) => {
+            // If user found
+            const hmac = createHmac('sha256', user.OTP);
             let time = new Date;
-            time = Math.floor((time - new Date(0)) / interval)
+            time = Math.floor((time - new Date(0)) / interval);
 
             hmac.update(time.toString());
             const digested = hmac.digest().toString('hex');
             res.status(200).json({ otp: digested, id: decodedToken.id });
           })
-          .catch((err) => // Error finding user
-            res.status(401).json({ message: "Not successful", error: err.message })
-          );
+          .catch((err) => {
+            // Error finding user
+            res.status(401).json({ message: 'Not successful', error: err.message });
+          });
       }
     });
-  } else { // No token
+  } else {
+    // No token
     return res
       .status(401)
       .render('error/401');
   }
-}
+};
