@@ -12,7 +12,8 @@ const { request, response } = require('express');
  * @param { response } res
  */
 async function subscriber(req, res) {
-  const { gps, battery, speed, mission, Time, signature, name } = req.body;
+  const { signature, name } = req.body;
+  const amd_r_data = req.body.data;
   // Checking if there is a signature
   if (!signature) {
     return res.status(401).json({ message: 'No message signature given' });
@@ -40,14 +41,9 @@ async function subscriber(req, res) {
   const model = Mongoose.model(id, data, id);
 
   // Checking all the message data
-  if (gps && battery && speed && mission && Time) {
-    const message = JSON.stringify({
-      gps,
-      battery,
-      speed,
-      mission,
-      Time,
-    });
+  if (amd_r_data) {
+    const message = amd_r_data;
+    const { gps, battery, speed, mission, Time } = JSON.parse(amd_r_data);
 
     // Getting key
     const keyOptions = {

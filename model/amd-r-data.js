@@ -4,20 +4,20 @@ const Mongoose = require('mongoose');
 const dataSchema = new Mongoose.Schema({
   gps: {
     lon: {
-      type: Mongoose.Types.Decimal128,
+      type: Number,
       required: true,
     },
     lat: {
-      type: Mongoose.Types.Decimal128,
+      type: Number,
       required: true,
     },
   },
   battery: {
-    type: Mongoose.Types.Decimal128,
+    type: Number,
     required: true,
   },
   speed: {
-    type: Mongoose.Types.Decimal128,
+    type: Number,
     required: true,
   },
   mission: {
