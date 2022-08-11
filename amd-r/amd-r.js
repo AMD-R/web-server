@@ -243,6 +243,29 @@ async function verifyUser(req, res) {
   }
 }
 
+/**
+ * API for checking if AMD-R is verified
+ * @param { request } req
+ * @param { response } res
+ * */
+async function verified(req, res) {
+  const { name } = req.body;
+
+  const selected = await amdr.findOne({ name });
+  if (!selected) {
+    return res.status(400).json({
+      message: 'AMD-R not registered',
+    });
+  }
+
+  if (selected.verified) {
+    return res.status(200).json({ results: true });
+  } else {
+    return res.status(200).json({ results: false });
+  }
+}
+
+
 module.exports = {
   subscriber,
   register,
@@ -250,4 +273,5 @@ module.exports = {
   verifyAMDR,
   getAMDRData,
   verifyUser,
+  verified,
 };
