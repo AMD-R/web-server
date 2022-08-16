@@ -216,17 +216,21 @@ async function getAMDRData(req, res) {
 }
 
 /**
- * API for user authentication for the AMD-R
+ * API for verifying user identity for the AMD-R
  * @param { request } req
  * @param { response } res
  * */
 async function verifyUser(req, res) {
-  const { otp, id } = req.body;
+  const { otp, id, role } = req.body;
   const user = await User.findById(id);
   const interval = 30 * 1000;
 
   if (!user) {
     return res.status(400).json({ message: 'Invalid User' });
+  }
+
+  if (!(user.role == role)) {
+    return res.status(401).json({ results: false });
   }
 
   const hmac = createHmac('sha256', user.OTP);
