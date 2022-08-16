@@ -126,3 +126,22 @@ exports.userAuthAPI = (req, res, next) => {
       .json({ message: 'Permissions Denied' });
   }
 };
+/**
+ * Check if the user logged in
+ * @param {request} req
+ * @param {response} res
+ * */
+exports.sessionAuthAPI = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(token, jwtSecret, (err) => {
+      if (err) {
+        return res.status(400).json({ message: 'Invalid Token' });
+      } else {
+        next();
+      }
+    });
+  } else {
+    return res.status(401).json({ message: 'User Not Logged In' });
+  }
+};
