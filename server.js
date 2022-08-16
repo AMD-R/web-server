@@ -2,7 +2,7 @@ const express = require('express');
 const connectDB = require('./db');
 const app = express();
 const cookieParser = require('cookie-parser');
-const { adminAuth, userAuth, sessionAuth } = require('./middleware/auth.js');
+const { adminAuth, userAuth, staffAuth, sessionAuth } = require('./middleware/auth.js');
 const { port } = require('./config.json');
 const { join } = require('node:path');
 
@@ -53,6 +53,7 @@ app.get('/admin/users', adminAuth, (req, res) => res.render('auth/admin-users'))
 app.get('/admin/amd-r', adminAuth, (req, res) => res.render('auth/admin-amd-r'));
 app.get('/amd-r/*', adminAuth, (req, res) => res.render('amd-r/amd-r'));
 app.get('/basic', userAuth, (req, res) => res.render('auth/user'));
+app.get('/staff', staffAuth, (req, res) => res.render('auth/staff'));
 
 // External js, media and css request
 // https://www.codespeedy.com/how-to-serve-html-and-css-files-using-express-js/

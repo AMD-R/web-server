@@ -52,6 +52,30 @@ exports.userAuth = (req, res, next) => {
   }
 };
 /**
+ * Check if the user logged in is a staff user
+ * @param {request} req
+ * @param {response} res
+ * */
+exports.staffAuth = (req, res, next) => {
+  const token = req.cookies.jwt;
+  if (token) {
+    jwt.verify(token, jwtSecret, (err, decodedToken) => {
+      if (err) {
+        return res.status(401).render('error/401');
+      } else {
+        if (decodedToken.role !== 'staff') {
+          return res.status(401).render('error/401');
+        }
+        next();
+      }
+    });
+  } else {
+    return res
+      .status(401)
+      .render('error/401');
+  }
+};
+/**
  * Check if the user logged in
  * @param {request} req
  * @param {response} res
@@ -67,6 +91,8 @@ exports.sessionAuth = (req, res, next) => {
           return res.status(303).redirect('/basic');
         } if (decodedToken.role == 'admin') {
           return res.status(303).redirect('/admin');
+        } if (decodedToken.role == 'staff') {
+          return res.status(303).redirect('/staff');
         } else {
           return res.render('auth/login-failed');
         }
