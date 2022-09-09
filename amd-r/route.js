@@ -12,6 +12,6 @@ router.route('/getAMD-Rs').get(adminAuthAPI, getAMDRs);
 router.route('/verifyAMD-R').patch(adminAuthAPI, verifyAMDR);
 router.route('/getData').get(adminAuthAPI, getAMDRData);
 router.route('/verifyUser').post(verifyUser);
-router.route('/test-verification').post(verified);
+router.route('/test-verification').get(verified);
 
 module.exports = router;

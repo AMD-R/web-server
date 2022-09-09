@@ -253,7 +253,7 @@ async function verifyUser(req, res) {
  * @param { response } res
  * */
 async function verified(req, res) {
-  const { name } = req.body;
+  const { name } = req.query;
 
   const selected = await amdr.findOne({ name });
   if (!selected) {
