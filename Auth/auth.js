@@ -29,6 +29,12 @@ if (!jwtSecret) {
  * */
 exports.register = async (req, res) => {
   const { username, password } = req.body;
+
+  if (password.length < 6) {
+    res.cookie('redirect', 'Password Too Short');
+    return res.status(401).redirect('/register');
+  }
+
   const privateKey = new Promise((resolve) => {
     generateKey('hmac', { length: 256 }, (err, key) => {
       if (err) {
