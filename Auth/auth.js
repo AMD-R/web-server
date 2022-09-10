@@ -30,6 +30,11 @@ if (!jwtSecret) {
 exports.register = async (req, res) => {
   const { username, password } = req.body;
 
+  if (!username || !password) {
+    res.cookie('redirect', 'No Username or Password Provided');
+    return res.status(401).redirect('/register');
+  }
+
   if (password.length < 6) {
     res.cookie('redirect', 'Password Too Short');
     return res.status(401).redirect('/register');
